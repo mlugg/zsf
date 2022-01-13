@@ -126,7 +126,7 @@ pub fn main() anyerror!void {
         if (j.brushes[0].isBox(&bsp) != j.brushes[1].isBox(&bsp)) {
             // Simple-complex seam
             simple_complex += 1;
-            try std.io.getStdOut().writer().print("sar_drawline {} {} {} {} {} {} 100 255 100\n", .{
+            try std.io.getStdOut().writer().print("sar_drawline {} {} {} {} {} {} 0 255 0\n", .{
                 j.edge.points[0][0],
                 j.edge.points[0][1],
                 j.edge.points[0][2],
@@ -141,7 +141,7 @@ pub fn main() anyerror!void {
             if (brush_leaves.get(j.brushes[0]) != brush_leaves.get(j.brushes[1])) {
                 // Different visleaves!
                 complex_complex += 1;
-                try std.io.getStdOut().writer().print("sar_drawline {} {} {} {} {} {} 255 150 0\n", .{
+                try std.io.getStdOut().writer().print("sar_drawline {} {} {} {} {} {} 255 200 0\n", .{
                     j.edge.points[0][0],
                     j.edge.points[0][1],
                     j.edge.points[0][2],
