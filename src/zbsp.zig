@@ -243,8 +243,8 @@ pub const Node = struct {
         const idx1 = self.children_[1];
 
         return .{
-            if (idx0 < 0) .{ .leaf = &bsp.leaves[@intCast(u32, 1 - idx0)] } else .{ .node = &bsp.nodes[@intCast(u32, idx0)] },
-            if (idx1 < 0) .{ .leaf = &bsp.leaves[@intCast(u32, 1 - idx1)] } else .{ .node = &bsp.nodes[@intCast(u32, idx1)] },
+            if (idx0 < 0) .{ .leaf = &bsp.leaves[@intCast(u32, -idx0 - 1)] } else .{ .node = &bsp.nodes[@intCast(u32, idx0)] },
+            if (idx1 < 0) .{ .leaf = &bsp.leaves[@intCast(u32, -idx1 - 1)] } else .{ .node = &bsp.nodes[@intCast(u32, idx1)] },
         };
     }
 };
