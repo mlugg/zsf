@@ -82,9 +82,8 @@ pub fn main() anyerror!void {
     const filename = blk: {
         var it = std.process.args();
         _ = it.skip();
-        break :blk (try it.next(gpa.allocator())) orelse return error.NoMapSpecified;
+        break :blk it.next() orelse return error.NoMapSpecified;
     };
-    defer gpa.allocator().free(filename);
 
     var f = try std.fs.cwd().openFile(filename, .{});
     defer f.close();
