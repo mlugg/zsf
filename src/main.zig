@@ -8,7 +8,7 @@ const Vec3 = std.meta.Vector(3, f64);
 // as well as the leaf containing it
 const BrushFinder = struct {
     bsp: *zbsp.Bsp,
-    result: std.AutoHashMap(*zbsp.Brush, *zbsp.Leaf),
+    result: std.AutoArrayHashMap(*zbsp.Brush, *zbsp.Leaf),
 
     fn checkLeaf(self: *BrushFinder, leaf: *zbsp.Leaf) !void {
         for (leaf.leafbrushes(self.bsp)) |leafbrush| {
@@ -27,10 +27,10 @@ const BrushFinder = struct {
         };
     }
 
-    fn run(allocator: std.mem.Allocator, bsp: *zbsp.Bsp) !std.AutoHashMap(*zbsp.Brush, *zbsp.Leaf) {
+    fn run(allocator: std.mem.Allocator, bsp: *zbsp.Bsp) !std.AutoArrayHashMap(*zbsp.Brush, *zbsp.Leaf) {
         var self = BrushFinder{
             .bsp = bsp,
-            .result = std.AutoHashMap(*zbsp.Brush, *zbsp.Leaf).init(allocator),
+            .result = std.AutoArrayHashMap(*zbsp.Brush, *zbsp.Leaf).init(allocator),
         };
         errdefer self.result.deinit();
 
@@ -45,22 +45,12 @@ const Join = struct {
     brushes: [2]*zbsp.Brush,
     edge: zbsp.Edge,
 
-    fn findForBrushList(allocator: std.mem.Allocator, bsp: *zbsp.Bsp, brushes: std.AutoHashMap(*zbsp.Brush, *zbsp.Leaf)) ![]Join {
+    fn findForBrushList(allocator: std.mem.Allocator, bsp: *zbsp.Bsp, brushes: std.AutoArrayHashMap(*zbsp.Brush, *zbsp.Leaf)) ![]Join {
         var result = std.ArrayList(Join).init(allocator);
         defer result.deinit();
 
-        // This is dumb, but HashMap doesn't give us direct access to
-        // the keys list
-        var brush_list = std.ArrayList(*zbsp.Brush).init(allocator);
-        defer brush_list.deinit();
-
-        var it = brushes.keyIterator();
-        while (it.next()) |brush| {
-            try brush_list.append(brush.*);
-        }
-
-        for (brush_list.items) |brush, i| {
-            for (brush_list.items[i + 1 ..]) |other| {
+        for (brushes.keys()) |brush| {
+            for (brushes.keys()) |other| {
                 for (try brush.edges(bsp)) |edge| {
                     if (other.fitEdgeToSurface(bsp, edge)) |adjusted| {
                         try result.append(.{ .brushes = .{ brush, other }, .edge = adjusted });
